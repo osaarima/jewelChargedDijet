@@ -1,0 +1,77 @@
+﻿# made with checksum.. point-and-click hashing for windows (64-bit edition).
+# from corz.org.. http://corz.org/windows/software/checksum/
+#
+#sha1#AliJBaseCard (Kim DongJo의 충돌된 사본 2017-07-20).o#2016.05.12@12.14:19
+e1b93d4d555b1c32dede14d2a47b38a38fb763d5 *AliJBaseCard (Kim DongJo의 충돌된 사본 2017-07-20).o
+#sha1#AliJBaseCard.cxx#2018.07.06@10.05:58
+14047a4e87ea4380da89211ca823f2e46abf8162 *AliJBaseCard.cxx
+#sha1#AliJBaseCard.h#2015.12.04@16.31:47
+c5cf7efa3d215727e09af81c1c2096beba58c330 *AliJBaseCard.h
+#sha1#AliJBaseCard.o#2019.01.30@09.35:11
+009ac2adf42b4a4d6199cdaa5e0c054e4a2049c7 *AliJBaseCard.o
+#sha1#AliJBaseTrack (Kim DongJo의 충돌된 사본 2017-07-20).o#2016.05.12@12.14:23
+e564497ef4791df786728342126f73af4d2162e5 *AliJBaseTrack (Kim DongJo의 충돌된 사본 2017-07-20).o
+#sha1#AliJBaseTrack.cxx#2018.06.26@17.40:55
+39536df583d7bf210da412b2cdc013c54d629fae *AliJBaseTrack.cxx
+#sha1#AliJBaseTrack.h#2018.07.24@14.44:30
+706fc5feda8f8d6f894c5cb804ee688a4e831f93 *AliJBaseTrack.h
+#sha1#AliJBaseTrack.o#2019.01.30@09.35:09
+806c749c4af87fcc0f0749e3dc9e6b5286bbef57 *AliJBaseTrack.o
+#sha1#AliJCard (Kim DongJo의 충돌된 사본 2017-07-20).o#2016.05.12@12.14:21
+3bd03144173481beefcc1248db47f4131cda1e10 *AliJCard (Kim DongJo의 충돌된 사본 2017-07-20).o
+#sha1#AliJCard.cxx#2018.07.06@10.05:58
+d7f1b0233e2cfe47e52ba4ef1048eaae0b1c609b *AliJCard.cxx
+#sha1#AliJCard.h#2015.12.04@16.36:20
+cfe96103b9ba82cce4d398e83f8c6ebd725c64a9 *AliJCard.h
+#sha1#AliJCard.o#2018.06.26@16.56:41
+d9eb165532b781159a766cef2e4c5f3539245568 *AliJCard.o
+#sha1#AliJCDijetHistos.cxx#2018.08.01@10.11:37
+61d27e61cd15f3c0d43338f6c3d41a153c6ad52b *AliJCDijetHistos.cxx
+#sha1#AliJCDijetHistos.h#2018.08.01@10.11:37
+3fc2385aebdd11aaa5975a5117d8e578aab5ea40 *AliJCDijetHistos.h
+#sha1#AliJCDijetHistos.o#2019.01.30@09.35:11
+e322f93c00c0ae5b3d2af2e63c614fe52b923005 *AliJCDijetHistos.o
+#sha1#AliJCDijetTask.cxx#2018.06.27@15.37:49
+6ed56a226745efc47eeae277c4c0ccab4d47ae17 *AliJCDijetTask.cxx
+#sha1#AliJCDijetTask.h#2018.06.27@15.37:49
+ef13c22bbcb79879b3ae0de6bdb2373008aee1af *AliJCDijetTask.h
+#sha1#AliJConst.h#2018.07.06@10.02:26
+ccac95caae83726b9900a046beabcc0280a74731 *AliJConst.h
+#sha1#AliJHistManager.cxx#2018.06.26@17.02:59
+56b81662310c33c0c36d9e3aa2650feb1686fc02 *AliJHistManager.cxx
+#sha1#AliJHistManager.h#2018.06.26@17.02:59
+f602682f109e00b0b1f13f7d2d1eb2c3955d1aab *AliJHistManager.h
+#sha1#AliJHistManager.o#2019.01.30@09.35:12
+ad72c761edca4c6377a4affddaf6d30177bfb44e *AliJHistManager.o
+#sha1#AliJHistogramInterface.cxx#2018.06.26@17.01:43
+312ba54c24eadc6384f76455ed3f77aa356c2f32 *AliJHistogramInterface.cxx
+#sha1#AliJHistogramInterface.h#2018.06.26@17.41:31
+e49ae6617f71e57ba573f056a279c00da98940f0 *AliJHistogramInterface.h
+#sha1#AliJHistogramInterface.o#2019.01.30@09.35:11
+de11ea1b36c59d0631bdabd763be8b9bcecac2f1 *AliJHistogramInterface.o
+#sha1#AliJPhoton.cxx#2015.12.04@16.40:01
+23e40de62f05cf2d78cd7f810f2949b9e0f6b179 *AliJPhoton.cxx
+#sha1#AliJPhoton.h#2015.12.04@16.40:01
+05858df37e83e8b7ed9a228ad05d69b5e5ceecde *AliJPhoton.h
+#sha1#inputbinning.h#2016.03.09@13.57:51
+32ea7784bfbb5679b85d970eeeca125bae908411 *inputbinning.h
+#sha1#inputbinning.h~#2016.02.24@13.42:01
+6e295ccf3ba6b98a69be3bcde6f6eb59a8ee4037 *inputbinning.h~
+#sha1#JConst.h~#2015.12.04@14.02:19
+3c2683c40a7b270ac240a559ccb58ea743d93111 *JConst.h~
+#sha1#JHepMCDataManager.cxx#2018.08.02@16.06:53
+ea88ad0f9810003c0c48607881b788f394b02beb *JHepMCDataManager.cxx
+#sha1#JHepMCDataManager.h#2018.08.02@16.26:26
+e8469f35ce15a2ecf9f15a61c42e1084520f2708 *JHepMCDataManager.h
+#sha1#JHistos (Kim DongJo의 충돌된 사본 2017-07-20).o#2016.05.12@12.14:22
+6323301aa50a945b678c9598873297745d66f65d *JHistos (Kim DongJo의 충돌된 사본 2017-07-20).o
+#sha1#JHistos.cxx#2016.04.28@13.35:26
+702787aa9af93abe649fdad4876803a0a784abb8 *JHistos.cxx
+#sha1#JHistos.h#2016.04.28@13.34:43
+abcf61e75d02e20bd0a809dab9619e6f54bd0173 *JHistos.h
+#sha1#JHistos.h~#2016.03.04@12.20:19
+7333752db1834dc68b3caeb5bdeb37bc6ed3473d *JHistos.h~
+#sha1#JHistos.o#2018.06.26@16.56:42
+9c65e8d5f9d45a30baa139a313b1da38fe1a5fb1 *JHistos.o
+#sha1#particle.tbl#2018.08.02@15.53:23
+6c376c21c8e2d029171dc345bd6f766284762419 *particle.tbl

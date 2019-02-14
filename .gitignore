@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Root-files:
+*.root
+
+#Additional files:
+nanoDict.cc
+nanoDict_rdict.pcm
+JEWELChargedDijet
