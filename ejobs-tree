@@ -1,0 +1,70 @@
+#!/bin/csh -f
+############################
+
+
+set PROG=`basename $0`
+ if ( $#argv < 3 ) then
+  echo
+  echo "Usage: $PROG <outname> <inputFolder> dijetLeadingPt"
+  exit
+endif
+
+setenv arg $1
+setenv folder $2
+setenv dijetLeadingPt $3
+setenv particleTbl ../HepPDT/HepPDT-3.04.01/data/particle.tbl
+setenv comment $arg-$dijetLeadingPt
+#################################
+# Output file locations
+#################################
+setenv Main_DIR     `pwd`
+setenv DoWhat       JEWELChargedDijet
+setenv oname        JEWEL-$comment
+setenv Disk         `pwd`
+setenv OUT_ERRORS   $Disk/outputs/${oname}/errors
+setenv Out_DIR      $Disk/outputs/${oname}/data
+setenv LOG_DIR      $Disk/outputs/${oname}/logs
+#################################
+# Need for serial job in sepeli(pbs)
+#################################
+setenv taskid '@ line = ( \$SLURM_ARRAY_TASK_ID )'
+#################################
+setenv noLines `ls -l $folder | cat | wc -l`
+ls -l $folder | tail -`expr $noLines - 1` > TodoTemp_${comment}.txt
+vim -c "1,$ norm d8W" -c "wq" TodoTemp_${comment}.txt
+sed "s#^#$folder#g" TodoTemp_${comment}.txt > Todo_${comment}.txt
+rm TodoTemp_${comment}.txt
+setenv TodoList Todo_${comment}.txt
+cd $Main_DIR
+
+setenv noFileToRun `cat $TodoList | wc -l`
+echo "$noFileToRun  jobs will be submitted"
+
+
+mkdir -p $OUT_ERRORS
+mkdir -p $Out_DIR
+mkdir -p $LOG_DIR
+
+#################################
+# Runlist to scan
+#################################
+
+cat << EOF > exec_JEWELtoROOT-$comment
+#!/bin/csh -f
+cd $Main_DIR
+source setup.csh
+setenv what  $DoWhat
+set line = 0
+$taskid
+setenv fullFile \`head -\${line} $TodoList | tail -1\`
+setenv indir \`dirname \$fullFile\`
+setenv myfile \`basename \$fullFile\`
+setenv rootoutfile  $Out_DIR/$oname-\$myfile.root
+setenv Log      $LOG_DIR/$oname-\$myfile.log
+setenv untarredFile \`tar xvzf \$fullFile\`
+./\${what} \$untarredFile \$rootoutfile $particleTbl $dijetLeadingPt >& \$Log && rm \$untarredFile
+setenv hepmcDir \`dirname \$untarredFile\`
+cd $Main_DIR
+EOF
+chmod +x exec_JEWELtoROOT-$comment
+    sbatch -v --array=1-$noFileToRun exec_JEWELtoROOT-$comment -J $comment  -e $OUT_ERRORS -o $OUT_ERRORS

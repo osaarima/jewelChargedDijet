@@ -1,8 +1,9 @@
 PROGRAM       = JEWELChargedDijet
 
-version       = CDijet
+version       = JTKT
 CXX           = g++
-CXXFLAGS      = -O -Wall -g -Wno-deprecated -D$(version)
+#CXXFLAGS      = -O -Wall -g -Wno-deprecated -bind_at_load -D$(version)
+CXXFLAGS      = -O -Wall -g -Wno-deprecated -Wno-misleading-indentation -D$(version) #-ggdb
 LD            = g++
 LDFLAGS       = -O
 SOFLAGS       = -shared
@@ -10,9 +11,13 @@ SOFLAGS       = -shared
 # -bind_at_load helps to remove linker error
 ############################################
 CXXFLAGS += $(shell root-config --cflags)
-LDFLAGS  = $(shell root-config --evelibs)
+LDFLAGS  = $(shell root-config --libs)
 CXXFLAGS += $(shell $(FASTJET)/bin/fastjet-config --cxxflags )
+#LDFLAGS += -Wl,-rpath,/cvmfs/alice.cern.ch/x86_64-2.6-gnu-4.1.2/Packages/fastjet/v3.2.1_1.024-alice1-3/lib -lm  -L/cvmfs/alice.cern.ch/x86_64-2.6-gnu-4.1.2/Packages/fastjet/v3.2.1_1.024-alice1-3/lib -lfastjettools -lfastjet 
+#LDFLAGS += -Wl,-rpath,/cvmfs/alice.cern.ch/x86_64-2.6-gnu-4.1.2/Packages/fastjet/v3.0.6_1.012-7/lib -lm  -L/cvmfs/alice.cern.ch/x86_64-2.6-gnu-4.1.2/Packages/fastjet/v3.0.6_1.012-7/lib -lfastjettools -lfastjet
 LDFLAGS += $(shell $(FASTJET)/bin/fastjet-config --libs --plugins ) 
+#LDFLAGS += -L$(PYTHIA8)/lib -lpythia8 
+#INCS    += -I$(PYTHIA8)/include
 LDFLAGS += -L$(HEPMC)/lib -lHepMC 
 LDFLAGS += -Wl,-rpath -Wl,$(HEPMC)/lib
 LDFLAGS += -L$(HEPPDT)/lib -lHepPDT -lHepPID
@@ -22,30 +27,8 @@ INCS    += -I$(HEPPDT)/include
 CXXFLAGS  += $(INCS)
 LDFLAGS += $L -ldl
 
-HDRSDICT = src/AliJCDijetHistos.h \
-		   src/AliJHistogramInterface.h \
-		   src/AliJHistManager.h \
-		   src/AliJBaseTrack.h \
-		   src/AliJBaseCard.h \
-		   src/AliJBaseEventHeader.h \
-		   src/JTreeDataManager.h \
-		   src/iaaAnalysis/AliJIaaAna.h \
-		   src/iaaAnalysis/AliJIaaHistograms.h \
-		   src/iaaAnalysis/AliJIaaCorrelations.h \
-		   src/AliJCorrelationInterface.h \
-		   src/AliJPiZero.h \
-		   src/AliJPhoton.h \
-		   src/AliJMCTrack.h \
-		   src/AliJTrackCut.h \
-		   src/AliJEventHeader.h \
-		   src/AliJRunHeader.h \
-		   src/AliJDataManager.h \
-		   src/AliJCard.h \
-		   src/AliJEventPool.h \
-		   src/AliJEfficiency.h \
-		   src/AliJRunTable.h \
-		   src/AliJTrack.h 
-
+HDRSDICT = src/AliJCDijetHistos.h src/AliJHistogramInterface.h src/AliJHistManager.h src/AliJBaseTrack.h src/AliJBaseCard.h
+           
 HDRS	+= $(HDRSDICT)  nanoDict.h
 
 

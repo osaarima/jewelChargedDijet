@@ -40,6 +40,9 @@
 #include <TClonesArray.h>
 #include "src/AliJCDijetHistos.h"
 #include "src/AliJBaseTrack.h"
+#include "src/JTreeDataManager.h"
+#include "src/AliJCard.h"
+#include "src/iaaAnalysis/AliJIaaAna.h"
 //#include "src/JHistos.h"
 //#include "src/AliJCard.h"
 
@@ -48,19 +51,19 @@
 using namespace fastjet;
 using namespace std;
 void CalculateJetsDijets(TClonesArray *inList,
-                                         int    lDebug,
-                                         int    lCBin,
-                                         double lParticleEtaCut,
-                                         double lParticlePtCut,
-                                         double lJetCone,
-                                         double lktJetCone,
-                                         int    lktScheme,
-                                         bool   lusePionMassInkt,
-                                         bool   luseDeltaPhiBGSubtr,
-                                         double lConstituentCut,
-                                         double lLeadingJetCut,
-                                         double lSubleadingJetCut,
-                                         double lDeltaPhiCut);
+                         int    lDebug,
+                         int    lCBin,
+                         double lParticleEtaCut,
+                         double lParticlePtCut,
+                         double lJetCone,
+                         double lktJetCone,
+                         int    lktScheme,
+                         bool   lusePionMassInkt,
+                         bool   luseDeltaPhiBGSubtr,
+                         double lConstituentCut,
+                         double lLeadingJetCut,
+                         double lSubleadingJetCut,
+                         double lDeltaPhiCut);
 
 
 class AliJCDijetHistos;
@@ -118,6 +121,33 @@ int main(int argc, char **argv) {
 
     TH1D *hCrossSectionInfo = new TH1D("hCrossSection","CrossSectionInfo",8,0,8);
 
+    // ======================== JIaa Ana =========================
+
+    //TString cardName  = Form("%s%s",gSystem->Getenv("ALICE_PHYSICS"),"/PWGCF/Correlations/macros/jcorran/cardAlice_IAA_pp.input");
+    TString cardName  = Form("%s%s","/n/work00/osanmasa/alice/AliPhysics","/PWGCF/Correlations/macros/jcorran/cardAlice_IAA_AA.input");
+    TString jtrigg= "hadron";
+    TString jassoc="hadron";
+    TString cardSetting = "AnalyseMCTruth=1;EfficiencyMode=0;TriggerMask=-1;CentBinBorders=0,10;zVertBins=-10,10;HadronSelectionCut=0;EventPoolDepth=100";
+
+    // === Set up JCard ====
+    AliJCard *card = new AliJCard(cardName.Data());
+    card->PrintOut();
+    card->ReadLine( cardSetting.Data() );
+    card->ReCompile();
+    card->PrintOut();
+
+    // === Create analysis object ===
+
+    AliJIaaAna *fAna;
+    fAna = new AliJIaaAna( kFALSE );
+
+    fAna->SetCard( card );
+    fAna->SetTrigger( jtrigg.Data() );
+    fAna->SetAssoc( jassoc.Data() );
+
+    fAna->UserCreateOutputObjects();
+
+
     //------------------------------------------------------------------
     // Define jet reconstruction
     //------------------------------------------------------------------
@@ -128,7 +158,7 @@ int main(int argc, char **argv) {
     double coneR                = 0.4; // atlas 0.6, cms 0.7 alice 0.4
 	double ktconeR              = 0.4;
 	double fusePionMassInktjets = false;
-	double fuseDeltaPhiBGSubtr  = false;
+    double fuseDeltaPhiBGSubtr  = false;
     double jetConstituentCut    = 5.0;
     double dijetSubleadingPt    = 20.0;
     double dijetDeltaPhiCut     = 2.0; // Cut is pi/dijetDeltaPhiCut
@@ -238,6 +268,8 @@ int main(int argc, char **argv) {
     int EventCounter = 0;
     //Float_t sigmaGen = 0.0;
     Float_t ebeweight = 1.0;
+    double crossSec = 0.0;
+    double pt, eta;
 
     HepMC::GenEvent* evt = ascii_in.read_next_event();
 
@@ -248,6 +280,9 @@ int main(int argc, char **argv) {
         ebeweight = 1.0; //no event-by-event weight at all. //sigmaGen/nTrial;
         hCrossSectionInfo->Fill(7.5,ebeweight);
         //if(iEvent % ieout == 0) cout << iEvent << "\t" << int(float(iEvent)/nEvent*100) << "%, nTried:" << nTried << ", nTrial:" << nTrial << ", sigma:" << sigmaGen << endl;
+        
+        crossSec += evt->cross_section()->cross_section()*1e-9; // From pb to mb
+        //cout << "cross section: " << evt->cross_section()->cross_section()*1e-9 << endl;
 
         for ( HepMC::GenEvent::particle_const_iterator p = evt->particles_begin(); p != evt->particles_end(); ++p ){
             if (    (*p)->status() == 1 &&                                                 // Check if particle is final
@@ -255,9 +290,13 @@ int main(int argc, char **argv) {
                     datacol.particle(HepPDT::ParticleID((*p)->pdg_id()))->isHadron() ) {   // Only hadrons are used.
                 TLorentzVector lParticle((*p)->momentum().px(), (*p)->momentum().py(), (*p)->momentum().pz(), (*p)->momentum().e());
                 AliJBaseTrack track( lParticle );
-                track.SetID((*p)->pdg_id());
-                track.SetTrackEff(1.);
-                new ((*inputList)[inputList->GetEntriesFast()]) AliJBaseTrack(track);
+                pt = track.Pt();
+                eta = track.Eta();
+                if (pt>partMinPtCut && TMath::Abs(eta) < partMinEtaCut){
+                    track.SetID((*p)->pdg_id());
+                    track.SetTrackEff(1.);
+                    new ((*inputList)[inputList->GetEntriesFast()]) AliJBaseTrack(track);
+                }
             }
         } // end of finalparticles
 
@@ -277,6 +316,15 @@ int main(int argc, char **argv) {
                             dijetSubleadingPt, // Dijet subleading jet pt cut
                             dijetDeltaPhiCut);  // Dijet DeltaPhi cut is pi/(this-argument)
 
+        // Next Iaa analysis
+        fAna->SetTrackList(inputList);
+        //fAna->GetCard()->WriteCard(fOutput); // fOutput is what exactly?
+        fAna->SetRunNumber(EventCounter);
+        fAna->SetCentrality(5);
+        fAna->SetZVertex(0.0); // same
+        fAna->UserExec();
+
+
         delete evt;
         ascii_in >> evt;
         EventCounter++;
@@ -284,6 +332,10 @@ int main(int argc, char **argv) {
     }//event loop
 
     fhistos->fh_events[0]->Fill("events",EventCounter);
+    cout << "Total cross sec: " << crossSec << ", total events: " << EventCounter << ", ratio: " << crossSec/EventCounter << endl;
+    hCrossSectionInfo->Fill(2.5,crossSec/EventCounter);
+    hCrossSectionInfo->Fill(3.5,crossSec/EventCounter);
+    hCrossSectionInfo->Fill(5.5,1); // for counting # of merged
 
     /*
        nTried = pythia.info.nTried();
@@ -311,19 +363,19 @@ int main(int argc, char **argv) {
 
 //______________________________________________________________________________
 void CalculateJetsDijets(TClonesArray *inList,
-                         int    lDebug,
-                         int    lCBin,
-                         double lParticleEtaCut,
-                         double lParticlePtCut,
-                         double lJetCone,
-                         double lktJetCone,
-                         int    lktScheme,
-                         bool   lusePionMassInkt,
-                         bool   luseDeltaPhiBGSubtr,
-                         double lConstituentCut,
-                         double lLeadingJetCut,
-                         double lSubleadingJetCut,
-                         double lDeltaPhiCut) {
+                                         int    lDebug,
+                                         int    lCBin,
+                                         double lParticleEtaCut,
+                                         double lParticlePtCut,
+                                         double lJetCone,
+                                         double lktJetCone,
+                                         int    lktScheme,
+                                         bool   lusePionMassInkt,
+                                         bool   luseDeltaPhiBGSubtr,
+                                         double lConstituentCut,
+                                         double lLeadingJetCut,
+                                         double lSubleadingJetCut,
+                                         double lDeltaPhiCut) {
 
 	double const etaMaxCutForJet = lParticleEtaCut-lJetCone;
 	double const MinJetPt = 10.0; // Min Jet Pt cut to disregard low pt jets
@@ -340,7 +392,7 @@ void CalculateJetsDijets(TClonesArray *inList,
 	vector<fastjet::PseudoJet> chparticles;
 	vector<fastjet::PseudoJet> ktchparticles;
 	vector<fastjet::PseudoJet> jets[jetClassesSize];
-	vector<fastjet::PseudoJet> rhoEstJets;
+    vector<fastjet::PseudoJet> rhoEstJets;
 	vector<fastjet::PseudoJet> constituents;
     fastjet::RecombinationScheme ktScheme;
 	fastjet::PseudoJet jetAreaVector;
@@ -412,7 +464,7 @@ void CalculateJetsDijets(TClonesArray *inList,
     
     jets[iRaw]    = fastjet::sorted_by_pt(cs.inclusive_jets(MinJetPt)); // APPLY Min pt cut for jet
     jets[iktJets] = fastjet::sorted_by_pt(cs_bge.inclusive_jets(0.0)); // APPLY Min pt cut for jet
-    
+
     if(luseDeltaPhiBGSubtr) {
         bool removed = false;
         for (unsigned iktJet = 1; iktJet < jets[iktJets].size(); iktJet++) { // First jet is already skipped here.
@@ -426,7 +478,8 @@ void CalculateJetsDijets(TClonesArray *inList,
         rhoEstJets = selectorBoth(jets[iktJets]);
     }
 
-    if( rhoEstJets.size() < 1 ) {
+
+    if( selectorBoth(jets[iktJets]).size() < 1 ) {
         fhistos->fh_events[lCBin]->Fill("no rho calc. events",1.0);
         rho  = 0.0;
         rhom = 0.0;
