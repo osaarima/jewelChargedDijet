@@ -13,13 +13,14 @@
 #include <HepPDT/TempParticleData.hh>
 #include <HepPDT/ParticleDataTable.hh>
 
+/*
 #include "fastjet/config.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequenceArea.hh"
 #include "fastjet/AreaDefinition.hh"
 #include "fastjet/tools/JetMedianBackgroundEstimator.hh"
-/*
+*//*
 #include "fastjet/config.h"
 #include "fastjet/ClusterSequence.hh"
 #include "fastjet/PseudoJet.hh"
@@ -39,6 +40,7 @@
 
 #include <TClonesArray.h>
 #include "src/AliJCDijetHistos.h"
+#include "src/AliJCDijetAna.h"
 #include "src/AliJBaseTrack.h"
 #include "src/JTreeDataManager.h"
 #include "src/AliJCard.h"
@@ -67,8 +69,10 @@ void CalculateJetsDijets(TClonesArray *inList,
 
 
 class AliJCDijetHistos;
+class AliJCDijetAna;
 
 AliJCDijetHistos *fhistos;
+AliJCDijetAna *fDijetAna;
 
 
 int main(int argc, char **argv) {
@@ -119,6 +123,8 @@ int main(int argc, char **argv) {
 
     fhistos->fHMG->Print();
 
+    fDijetAna = new AliJCDijetAna();
+
     TH1D *hCrossSectionInfo = new TH1D("hCrossSection","CrossSectionInfo",8,0,8);
 
     // ======================== JIaa Ana =========================
@@ -162,6 +168,7 @@ int main(int argc, char **argv) {
     double jetConstituentCut    = 5.0;
     double dijetSubleadingPt    = 20.0;
     double dijetDeltaPhiCut     = 2.0; // Cut is pi/dijetDeltaPhiCut
+    double fmatchingR           = 0.2;
     int centBin=0;
     int fktScheme               = 1;
 
@@ -206,58 +213,20 @@ int main(int argc, char **argv) {
         cout << endl;
     }
 
-    // Save information about the settings used.
-    fhistos->fh_info->Fill("Count", 1.0);
-    fhistos->fh_info->Fill("MC", 1.0);
-    fhistos->fh_info->Fill("Cent bin border 00", 0.0);
-    fhistos->fh_info->Fill("Cent bin border 01", 5.0);
-    fhistos->fh_info->Fill("Jet cone", coneR);
-    fhistos->fh_info->Fill("kt-jet cone", ktconeR);
-    fhistos->fh_info->Fill("Scheme", fktScheme);
-    fhistos->fh_info->Fill("Use pion mass", fusePionMassInktjets);
-    fhistos->fh_info->Fill("Particle eta cut", partMinEtaCut);
-    fhistos->fh_info->Fill("Particle pt cut", partMinPtCut);
-    fhistos->fh_info->Fill("Leading jet cut", dijetLeadingPt);
-    fhistos->fh_info->Fill("Subleading jet cut", dijetSubleadingPt);
-    fhistos->fh_info->Fill("Const. cut", jetConstituentCut);
-    fhistos->fh_info->Fill("Delta phi cut pi/",dijetDeltaPhiCut);
-
-    // Initialize fh_events so that the bin order is correct
-    fhistos->fh_events[0]->Fill("events",0.0);
-    fhistos->fh_events[0]->Fill("particles",0.0);
-    fhistos->fh_events[0]->Fill("acc. particles",0.0);
-    fhistos->fh_events[0]->Fill("no rho calc. events",0.0);
-    fhistos->fh_events[0]->Fill("rho calc. events",0.0);
-    fhistos->fh_events[0]->Fill("jets",0.0);
-    fhistos->fh_events[0]->Fill("acc. jets",0.0);
-    fhistos->fh_events[0]->Fill("const. cut jets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. jets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. const. cut jets",0.0);
-    fhistos->fh_events[0]->Fill("kt-jets",0.0);
-    fhistos->fh_events[0]->Fill("acc. kt-jets",0.0);
-    fhistos->fh_events[0]->Fill("leading jet drop",0.0);
-    fhistos->fh_events[0]->Fill("subleading jet drop",0.0);
-    fhistos->fh_events[0]->Fill("raw dijets",0.0);
-    fhistos->fh_events[0]->Fill("raw dijets leading cut",0.0);
-    fhistos->fh_events[0]->Fill("raw acc. dijets",0.0);
-    fhistos->fh_events[0]->Fill("raw deltaphi cut dijets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. dijets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. dijets leading cut",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. acc. dijets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. deltaphi cut dijets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. const. cut dijets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. const. cut dijets leading cut",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. const. cut acc. dijets",0.0);
-    fhistos->fh_events[0]->Fill("bg. subtr. const. cut deltaphi cut dijets",0.0);
-    fhistos->fh_events[0]->Fill("const. cut dijets",0.0);
-    fhistos->fh_events[0]->Fill("const. cut dijets leading cut",0.0);
-    fhistos->fh_events[0]->Fill("const. cut acc. dijets",0.0);
-    fhistos->fh_events[0]->Fill("const. cut deltaphi cut dijets",0.0);
-    fhistos->fh_events[0]->Fill("kt dijets",0.0);
-    fhistos->fh_events[0]->Fill("kt dijets leading cut",0.0);
-    fhistos->fh_events[0]->Fill("kt acc. dijets",0.0);
-    fhistos->fh_events[0]->Fill("kt deltaphi cut dijets",0.0);
-
+    fDijetAna->SetSettings(5,
+                      partMinEtaCut,
+                      partMinPtCut,
+                      coneR,
+                      ktconeR,
+                      fktScheme,
+                      fusePionMassInktjets,
+                      fuseDeltaPhiBGSubtr,
+                      jetConstituentCut,
+                      dijetLeadingPt,
+                      dijetSubleadingPt,
+                      dijetDeltaPhiCut,
+                      fmatchingR);
+    fDijetAna->InitHistos(fhistos, true, 1);
 
     //--------------------------------------------------------
     //         B e g i n    e v e n t    l o o p.
@@ -270,6 +239,7 @@ int main(int argc, char **argv) {
     Float_t ebeweight = 1.0;
     double crossSec = 0.0;
     double pt, eta;
+    int fCBin = 0;
 
     HepMC::GenEvent* evt = ascii_in.read_next_event();
 
@@ -301,20 +271,8 @@ int main(int argc, char **argv) {
         } // end of finalparticles
 
         // Here I call my function
-        CalculateJetsDijets(inputList,
-                            5, // Debug
-                            centBin, // Cent bin
-                            partMinEtaCut, // Particle eta cut
-                            partMinPtCut, // Particle pt cut
-                            coneR, // Jet cone size
-                            ktconeR,
-                            fktScheme,  
-                            fusePionMassInktjets,
-                            fuseDeltaPhiBGSubtr,
-                            jetConstituentCut, // Jet constituent cut
-                            dijetLeadingPt, // Dijet leading jet pt cut
-                            dijetSubleadingPt, // Dijet subleading jet pt cut
-                            dijetDeltaPhiCut);  // Dijet DeltaPhi cut is pi/(this-argument)
+        fDijetAna->CalculateJets(inputList, fhistos, fCBin);
+        fDijetAna->FillJetsDijets(fhistos, fCBin);
 
         // Next Iaa analysis
         fAna->SetTrackList(inputList);
